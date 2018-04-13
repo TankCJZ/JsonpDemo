@@ -56,7 +56,7 @@
     <script>
         !(function (window) {
 
-            function jsonp(param) {
+            function Jsonp(param) {
                 let ele = document,
                     script = ele.createElement('script'),
                     result = null,
@@ -82,13 +82,13 @@
                 script.src = _url;
             }
 
-            window.jsonp = jsonp;
+            window.Jsonp = Jsonp;
 
         })(window);
 
         document.getElementById('key').addEventListener('keyup',function(){
             let key = document.getElementById('key').value;
-            new jsonp({
+            new Jsonp({
                 url: `https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?format=jsonp&key=${key}&jsonpCallback=call&format=jsonp`,
                 callbackName: 'call',
                 success: function (result) {
