@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        *{margin: 0;padding: 0}
+        table{
+            width: 100%;
+            text-align: center;
+            border-spacing: none;
+            border-collapse: collapse;
+            border: 1px solid #eee;
+            line-height: 45px;
+        }
+        .container{
+            width: 500px;
+            margin: 100px auto;
+        }
+        td,th{
+            border: 1px solid #eee;
+        }
+        input{
+            margin-top: 10px;
+            width: 100%;
+            height: 35px;
+            line-height: 35px;
+            border: 1px solid #eee;
+            outline: none;
+            text-indent: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table>
+            <thead>
+                <caption>QQ音乐搜索API调用</caption>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>singer</th>
+                </tr>
+            </thead>
+            <tbody id="result">
+                
+            </tbody>
+        </table>
+        <div>
+            <input id="key" type="text" placeholder="歌曲或者歌手...">
+        </div>
+    </div>
+    
+    <script>
+        !(function (window) {
+
+            function jsonp(param) {
+                let ele = document,
+                    script = ele.createElement('script'),
+                    result = null,
+                    _url = param.url || '',
+                    _success = param.success || function () { },
+                    _error = param.error || function () { };
+                
+                if( !param.callbackName ){ throw new Error('callbackName is required!'); }
+
+                window[param.callbackName] = function(){ result = arguments[0]; };
+
+                ele.getElementsByTagName('head')[0].appendChild(script);
+
+                script.onload = script.readystatechange = function () {
+                    if (!script.readyState || /loaded|complete/.test(script.readyState)) {
+                        _success(result);
+                        script.onload = script.readystatechange = null;
+                    }else{
+                        _error();
+                    }
+                }
+                
+                script.src = _url;
+            }
+
+            window.jsonp = jsonp;
+
+        })(window);
+
+        document.getElementById('key').addEventListener('keyup',function(){
+            let key = document.getElementById('key').value;
+            new jsonp({
+                url: `https://c.y.qq.com/splcloud/fcgi-bin/smartbox_new.fcg?format=jsonp&key=${key}&jsonpCallback=call&format=jsonp`,
+                callbackName: 'call',
+                success: function (result) {
+                    if (result) {
+                        render(result);
+                    }
+                },
+                error: function(){
+                    console.log('error');
+                }
+            });
+        },false);
+
+        
+
+        function render(result){
+            console.log(result);
+            let dom = document.getElementById('result');
+            let tmp = '';
+            
+            result.data.song.itemlist.forEach(ele => {
+                tmp += `<tr><td>${ele.id}</td><td>${ele.name}</td><td>${ele.singer}</td></tr>`;
+            });
+            dom.innerHTML = tmp;
+        }
+    </script>
+</body>
+</html>
